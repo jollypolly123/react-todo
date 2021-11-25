@@ -1,13 +1,19 @@
 import './App.css';
 import React, { useState } from "react";
 import { checkStatus, listTodos, createTodo, retrieveTodo, updateTodo, deleteTodo, toggleTodo } from "./apiCalls";
+import TodoList from './TodoList';
+import { EditTodo, CreateTodo } from './EditTodo';
+import ErrorPage from './errorComponents';
 
 function App() {
   const [todoList, updateTodo] = useState(["Cras justo odio", "Dapibus ac facilisis in"]);
   const [page, switchPage] = useState(0);
 
-  checkStatus().then(r => console.log(r));
-  listTodos().then(r => console.log(r));
+  let stat = 204;
+  checkStatus().then(r => {console.log(r); stat = r.status;});
+  console.log(stat);
+  // listTodos().then(r => console.log(r));
+  console.log("hello");
   
   return (
     <div className="App">
@@ -30,13 +36,7 @@ function App() {
           <button className="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
         </form>
       </nav>
-
-      <ul className="list-group py-3">
-        {todoList.map(item => {
-          return (<li className="list-group-item">{item}</li>)
-        })}
-      </ul>
-
+      {stat === 204 ? <TodoList todoList={todoList} /> : <ErrorPage error={"Server is down. Please try again later."} />}
     </div>
   );
 }
