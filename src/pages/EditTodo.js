@@ -1,4 +1,4 @@
-import { createTodo, retrieveTodo, updateTodo, deleteTodo, toggleTodo } from "./apiCalls";
+import { createTodo, retrieveTodo, updateTodo, deleteTodo, toggleTodo } from "../apiCalls";
 
 export function EditTodo(props) {
 

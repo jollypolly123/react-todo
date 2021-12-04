@@ -8,13 +8,14 @@ export async function listTodos() {
     return response;
 }
 
-export async function createTodo(ttl, desc="", du=null) {
+export async function createTodo(ttl, desc, du=null) {
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: ttl, 
             description: desc, 
-            due: du })
+            due: du,
+        })
     };
     const response = await fetch('https://interview-assignment.wafflehacks.tech/api/v1/todos', requestOptions);
     return response;
@@ -40,6 +41,7 @@ export async function updateTodo(id, ttl, desc="", du=null, comp=false) {
 
 export async function deleteTodo(id) {
     const response = await fetch(`https://interview-assignment.wafflehacks.tech/api/v1/todos/${id}`, { method: 'DELETE' });
+    console.log(response);
     return response;
 }
 
