@@ -256,7 +256,8 @@ export default function TodoList(props) {
                       type="button"
                       className="btn-sm btn-outline-danger"
                       onClick={() => {
-                        deleteTodo(item.id);
+                        setTaskDetails({ id: item.id, ...taskDetails });
+                        setDeleteShow(true);
                       }}
                     >
                       Delete Task
@@ -395,7 +396,7 @@ export default function TodoList(props) {
             variant="secondary"
             onClick={() => handleDelete(taskDetails.id)}
           >
-            Cancel
+            Delete
           </Button>
         </Modal.Footer>
       </Modal>
