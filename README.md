@@ -10,8 +10,8 @@ It provides the following features:
 - [x] Toggle completion status of todos from the main page
 - [x] Edit a single todo, including title, description, date/time due, and completion status
 - [x] Delete a single todo from the main page
-- [x] Filter the list of todos by completion status
-- [x] Filter the list of todos by title
+- [ ] Filter the list of todos by completion status
+- [ ] Filter the list of todos by title
 
 ## Functionality
 
