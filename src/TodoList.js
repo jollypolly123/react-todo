@@ -4,13 +4,14 @@ import {
   updateTodo,
   deleteTodo,
   toggleTodo,
-} from "../apiCalls";
+} from "./apiCalls";
 import React, { useState } from "react";
 import { Modal, Button, Dropdown, DropdownButton } from "react-bootstrap";
 
 export default function TodoList(props) {
   const [editShow, setEditShow] = useState(false);
   const [detailShow, setDetailShow] = useState(false);
+  const [deleteShow, setDeleteShow] = useState(false);
   const [taskDetails, setTaskDetails] = useState({
     id: "",
     title: "",
@@ -30,6 +31,7 @@ export default function TodoList(props) {
     setTimeTitle(timeFormat);
   };
 
+  const handleDeleteClose = () => setDeleteShow(false);
   const handleDetailClose = () => setDetailShow(false);
   const handleEditClose = () => setEditShow(false);
   const handleEdit = (e) => {
@@ -65,6 +67,12 @@ export default function TodoList(props) {
     props.update();
   };
 
+  const handleDelete = (todoId) => {
+    deleteTodo(todoId);
+    setEditShow(false);
+    props.update();
+  };
+
   const createNew = function (e) {
     e.preventDefault();
     if (e.target.due.value === "") {
@@ -75,7 +83,7 @@ export default function TodoList(props) {
       const due = `${e.target.due.value}T${
         timeTitle.length === 5 ? timeTitle : "00:00:00"
       }+00:00`;
-      createTodo(e.target.title.value, e.target.desc.value, "ok").then((e) => {
+      createTodo(e.target.title.value, e.target.desc.value, due).then((e) => {
         if (e.status === 400) alert("Error: your task was not created");
       });
     }
@@ -267,14 +275,13 @@ export default function TodoList(props) {
         </Modal.Header>
         <Modal.Body>{taskDetails.description}</Modal.Body>
         <Modal.Footer>
-          {taskDetails.complete && (
-            <span>
-              <i>Task Completed</i>
-            </span>
-          )}
+          <span>
+            <i>Task {!taskDetails.complete && "Not"} Completed</i>
+          </span>
           {taskDetails.due !== null && (
             <span>
-              <strong>Date due:</strong> {taskDetails.due}
+              <strong>Date due:</strong> {taskDetails.due.substring(0, 10)} at{" "}
+              {taskDetails.due.substring(11, 16)}
             </span>
           )}
           <Button variant="secondary" onClick={handleDetailClose}>
@@ -325,7 +332,7 @@ export default function TodoList(props) {
                 <DropdownButton
                   id="time-dropdown"
                   variant="secondary"
-                  title={timeTitle}
+                  title={taskDetails.due.substring(11, 16)}
                 >
                   <div style={{ maxHeight: "400px", overflowY: "scroll" }}>
                     <Dropdown.Item onClick={() => setTimeTitle("Time (UTC)")}>
@@ -349,18 +356,19 @@ export default function TodoList(props) {
                 </DropdownButton>
               </div>
             </div>
+            <div class="form-check">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                id="task-complete"
+                defaultChecked={taskDetails.complete}
+              />
+              <label class="form-check-label" for="task-complete">
+                Completed
+              </label>
+            </div>
           </Modal.Body>
           <Modal.Footer>
-            {taskDetails.complete && (
-              <span>
-                <i>Task Completed</i>
-              </span>
-            )}
-            {taskDetails.due !== null && (
-              <span>
-                <strong>Date due:</strong> {taskDetails.due}
-              </span>
-            )}
             <Button variant="secondary" onClick={handleEditClose}>
               Cancel
             </Button>
@@ -369,6 +377,27 @@ export default function TodoList(props) {
             </button>
           </Modal.Footer>
         </form>
+      </Modal>
+
+      <Modal show={deleteShow} onHide={handleDeleteClose}>
+        <Modal.Header>
+          <Modal.Title>Deleting {taskDetails.title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to delete this todo?</Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => handleDeleteClose(taskDetails.id)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => handleDelete(taskDetails.id)}
+          >
+            Cancel
+          </Button>
+        </Modal.Footer>
       </Modal>
     </div>
   );

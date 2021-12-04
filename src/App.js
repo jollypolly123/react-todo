@@ -1,16 +1,8 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
 
-import {
-  checkStatus,
-  listTodos,
-  createTodo,
-  retrieveTodo,
-  updateTodo,
-  toggleTodo,
-} from "./apiCalls";
-import TodoList from "./pages/TodoList";
-import { EditTodo, CreateTodo } from "./pages/EditTodo";
+import { checkStatus, listTodos } from "./apiCalls";
+import TodoList from "./TodoList";
 
 import ErrorPage from "./errorComponents";
 
