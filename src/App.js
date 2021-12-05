@@ -16,8 +16,7 @@ function App() {
   );
 
   const updatedApp = () => {
-    if (updateToggle) changeUpdateToggle(false);
-    else changeUpdateToggle(true);
+    changeUpdateToggle(updateToggle ? false : true);
   };
 
   const handleSearch = (e) => {

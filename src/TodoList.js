@@ -5,7 +5,7 @@ import {
   deleteTodo,
   toggleTodo,
 } from "./apiCalls";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, Dropdown, DropdownButton } from "react-bootstrap";
 
 export default function TodoList(props) {
@@ -18,6 +18,7 @@ export default function TodoList(props) {
     description: "",
     due: null,
     complete: false,
+    type: null,
   });
   const [titleFilled, setTitleFilled] = useState(false);
   const [timeTitle, setTimeTitle] = useState("Time (UTC)");
@@ -31,9 +32,40 @@ export default function TodoList(props) {
     setTimeTitle(timeFormat);
   };
 
-  const handleDeleteClose = () => setDeleteShow(false);
-  const handleDetailClose = () => setDetailShow(false);
-  const handleEditClose = () => setEditShow(false);
+  const handleDetailClose = () => {
+    setTaskDetails({
+      id: "",
+      title: "",
+      description: "",
+      due: null,
+      complete: false,
+      type: null,
+    });
+    setDetailShow(false);
+  };
+  const handleEditClose = () => {
+    setTaskDetails({
+      id: "",
+      title: "",
+      description: "",
+      due: null,
+      complete: false,
+      type: null,
+    });
+    setEditShow(false);
+  };
+  const handleDeleteClose = () => {
+    setTaskDetails({
+      id: "",
+      title: "",
+      description: "",
+      due: null,
+      complete: false,
+      type: null,
+    });
+    setDeleteShow(false);
+  };
+
   const handleEdit = (e) => {
     e.preventDefault();
     if (e.target.due.value === "") {
@@ -67,8 +99,8 @@ export default function TodoList(props) {
     props.update();
   };
 
-  const handleDelete = (todoId) => {
-    deleteTodo(todoId).then((e) => {
+  const handleDelete = () => {
+    deleteTodo(deleteShow).then((e) => {
       if (e.status !== 204) alert("There was a problem deleting your task");
     });
     setDeleteShow(false);
@@ -106,9 +138,9 @@ export default function TodoList(props) {
             description: item.description,
             due: item.due,
             complete: item.complete,
+            type: "detail",
           });
         });
-        setDetailShow(true);
       })
       .catch((err) => {
         console.log(err);
@@ -125,14 +157,20 @@ export default function TodoList(props) {
             description: item.description,
             due: item.due,
             complete: item.complete,
+            type: "edit",
           });
         });
-        setEditShow(true);
       })
       .catch((err) => {
         console.log(err);
       });
   };
+
+  useEffect(() => {
+    if (taskDetails.type === "detail") setDetailShow(true);
+    else if (taskDetails.type === "edit") setEditShow(true);
+    else if (taskDetails.type === "delete") setDeleteShow(true);
+  }, [taskDetails]);
 
   return (
     <div className="container-fluid">
@@ -262,8 +300,7 @@ export default function TodoList(props) {
                       type="button"
                       className="btn-sm btn-outline-danger"
                       onClick={() => {
-                        setTaskDetails({ id: item.id, ...taskDetails });
-                        setDeleteShow(true);
+                        setDeleteShow(item.id);
                       }}
                     >
                       Delete Task
