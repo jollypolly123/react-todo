@@ -68,8 +68,10 @@ export default function TodoList(props) {
   };
 
   const handleDelete = (todoId) => {
-    deleteTodo(todoId);
-    setEditShow(false);
+    deleteTodo(todoId).then((e) => {
+      if (e.status !== 204) alert("There was a problem deleting your task");
+    });
+    setDeleteShow(false);
     props.update();
   };
 
@@ -172,13 +174,13 @@ export default function TodoList(props) {
               {[...Array(24)].map((e, i) => {
                 if (i < 10)
                   return (
-                    <Dropdown.Item onClick={() => handleTime(i)}>
+                    <Dropdown.Item key={i} onClick={() => handleTime(i)}>
                       0{i}:00:00
                     </Dropdown.Item>
                   );
                 else
                   return (
-                    <Dropdown.Item onClick={() => handleTime(i)}>
+                    <Dropdown.Item key={i} onClick={() => handleTime(i)}>
                       {i}:00:00
                     </Dropdown.Item>
                   );
@@ -226,6 +228,7 @@ export default function TodoList(props) {
                   <td>
                     <div className="custom-control custom-switch">
                       <input
+                        key={item.id}
                         type="checkbox"
                         className="custom-control-input"
                         id="completed"
@@ -233,13 +236,16 @@ export default function TodoList(props) {
                         onChange={() => {}}
                       />
                       <label
+                        key={item.id}
                         className="custom-control-label"
-                        for="completed"
+                        htmlFor="completed"
                         style={{ cursor: "pointer" }}
                         onClick={() => {
-                          toggleTodo(item.id);
+                          toggleTodo(item.id).then((e) => {
+                            if (e.status === 404)
+                              alert("The task could not be found");
+                          });
                           props.update();
-                          console.log(item.id);
                         }}
                       ></label>
                     </div>
@@ -279,7 +285,7 @@ export default function TodoList(props) {
           <span>
             <i>Task {!taskDetails.complete && "Not"} Completed</i>
           </span>
-          {taskDetails.due !== null && (
+          {taskDetails.due !== null && taskDetails.due !== "" && (
             <span>
               <strong>Date due:</strong> {taskDetails.due.substring(0, 10)} at{" "}
               {taskDetails.due.substring(11, 16)}
@@ -333,7 +339,9 @@ export default function TodoList(props) {
                 <DropdownButton
                   id="time-dropdown"
                   variant="secondary"
-                  title={taskDetails.due.substring(11, 16)}
+                  title={
+                    taskDetails.due !== null ? taskDetails.due : "Time (UTC)"
+                  }
                 >
                   <div style={{ maxHeight: "400px", overflowY: "scroll" }}>
                     <Dropdown.Item onClick={() => setTimeTitle("Time (UTC)")}>
@@ -364,7 +372,7 @@ export default function TodoList(props) {
                 id="task-complete"
                 defaultChecked={taskDetails.complete}
               />
-              <label class="form-check-label" for="task-complete">
+              <label class="form-check-label" htmlFor="task-complete">
                 Completed
               </label>
             </div>
@@ -392,10 +400,7 @@ export default function TodoList(props) {
           >
             Cancel
           </Button>
-          <Button
-            variant="secondary"
-            onClick={() => handleDelete(taskDetails.id)}
-          >
+          <Button variant="danger" onClick={() => handleDelete(taskDetails.id)}>
             Delete
           </Button>
         </Modal.Footer>

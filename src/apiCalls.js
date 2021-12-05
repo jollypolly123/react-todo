@@ -56,7 +56,6 @@ export async function deleteTodo(id) {
     `https://interview-assignment.wafflehacks.tech/api/v1/todos/${id}`,
     { method: "DELETE" }
   );
-  console.log(response);
   return response;
 }
 

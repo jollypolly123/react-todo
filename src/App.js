@@ -1,9 +1,10 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
+import RefreshIcon from "@material-ui/icons/Refresh";
 
 import { checkStatus, listTodos } from "./apiCalls";
-import TodoList from "./TodoList";
 
+import TodoList from "./TodoList";
 import ErrorPage from "./errorComponents";
 
 function App() {
@@ -13,36 +14,73 @@ function App() {
   const [renderPage, switchRenderPage] = useState(
     <ErrorPage error={"App Loading..."} />
   );
-  const [status, setStatus] = useState(true);
-
-  useEffect(() => {
-    async function fetchData() {
-      await checkStatus().then((r) => {
-        if (r.status === 204 && status === false) setStatus(true);
-        else if (r.status !== 204 && status === true) setStatus(false);
-      });
-    }
-    fetchData();
-
-    if (status) {
-      listTodos().then((e) => {
-        e.json().then((v) => {
-          updateTodoList(v);
-        });
-      });
-
-      switchRenderPage(<TodoList todoList={todoList} update={updatedApp} />);
-    } else {
-      switchRenderPage(
-        <ErrorPage error={"Server is down. Please try again later."} />
-      );
-    }
-  }, [status, updateToggle, todoList]);
 
   const updatedApp = () => {
     if (updateToggle) changeUpdateToggle(false);
     else changeUpdateToggle(true);
   };
+
+  const handleSearch = (e) => {
+    if (e.target.value === "") {
+      switchRenderPage(<TodoList todoList={todoList} update={updatedApp} />);
+    } else {
+      switchRenderPage(
+        <TodoList
+          todoList={[...todoList].filter((x) => {
+            return x.title.includes(e.target.value);
+          })}
+          update={updatedApp}
+        />
+      );
+    }
+  };
+
+  useEffect(() => {
+    console.log("changed");
+    async function fetchData() {
+      await checkStatus().then((r) => {
+        if (r.status === 204) {
+          listTodos().then((e) => {
+            e.json().then((v) => {
+              updateTodoList(v);
+            });
+          });
+        } else if (r.status !== 204) {
+          switchRenderPage(
+            <ErrorPage error={"Server is down. Please try again later."} />
+          );
+        }
+      });
+    }
+    fetchData();
+  }, [updateToggle, page]);
+
+  useEffect(() => {
+    switch (page) {
+      case 1:
+        switchRenderPage(
+          <TodoList
+            todoList={[...todoList].filter((x) => {
+              return x.complete === false;
+            })}
+            update={updatedApp}
+          />
+        );
+        break;
+      case 2:
+        switchRenderPage(
+          <TodoList
+            todoList={[...todoList].filter((x) => {
+              return x.complete === true;
+            })}
+            update={updatedApp}
+          />
+        );
+        break;
+      default:
+        switchRenderPage(<TodoList todoList={todoList} update={updatedApp} />);
+    }
+  }, [todoList]);
 
   return (
     <div className="App">
@@ -51,18 +89,39 @@ function App() {
       </nav>
       <nav className="navbar navbar-expand navbar-dark bg-dark text-center justify-content-center">
         <ul className="navbar-nav mr-auto text-center">
+          <li className="nav-item">
+            <span
+              className="nav-link"
+              style={{ cursor: "pointer" }}
+              onClick={() => updatedApp()}
+            >
+              <RefreshIcon />
+            </span>
+          </li>
           <li className={`nav-item ${page === 0 ? "active" : ""}`}>
-            <span className="nav-link" onClick={() => switchPage(0)}>
+            <span
+              className="nav-link"
+              style={{ cursor: "pointer" }}
+              onClick={() => switchPage(0)}
+            >
               All
             </span>
           </li>
           <li className={`nav-item ${page === 1 ? "active" : ""}`}>
-            <span className="nav-link" onClick={() => switchPage(1)}>
+            <span
+              className="nav-link"
+              style={{ cursor: "pointer" }}
+              onClick={() => switchPage(1)}
+            >
               In Progress
             </span>
           </li>
           <li className={`nav-item ${page === 2 ? "active" : ""}`}>
-            <span className="nav-link" onClick={() => switchPage(2)}>
+            <span
+              className="nav-link"
+              style={{ cursor: "pointer" }}
+              onClick={() => switchPage(2)}
+            >
               Completed
             </span>
           </li>
@@ -73,10 +132,8 @@ function App() {
             type="search"
             placeholder="Search for a task"
             aria-label="Search"
+            onChange={(e) => handleSearch(e)}
           />
-          <button className="btn btn-outline-info my-2 my-sm-0" type="submit">
-            Search
-          </button>
         </form>
       </nav>
       {renderPage}

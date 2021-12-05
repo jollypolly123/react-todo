@@ -1,6 +1,6 @@
 # react-todo for WaffleHacks
 
-This web app provides the ability to connect to WaffleHack's Todo List API to keep track of tasks, their details, and completion.\
+This single page application provides the ability to connect to WaffleHack's Todo List API to keep track of tasks, their details, and completion.\
 It provides the following features:
 
 - [x] List all todos on main page
@@ -10,8 +10,8 @@ It provides the following features:
 - [x] Toggle completion status of todos from the main page
 - [x] Edit a single todo, including title, description, date/time due, and completion status
 - [x] Delete a single todo from the main page
-- [ ] Filter the list of todos by completion status
-- [ ] Filter the list of todos by title
+- [x] Filter the list of todos by completion status
+- [x] Filter the list of todos by title
 
 ## Functionality
 
