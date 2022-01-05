@@ -37,19 +37,25 @@ function App() {
   useEffect(() => {
     console.log("changed");
     async function fetchData() {
-      await checkStatus().then((r) => {
-        if (r.status === 204) {
-          listTodos().then((e) => {
-            e.json().then((v) => {
-              updateTodoList(v);
+      try {
+        await checkStatus().then((r) => {
+          if (r.status === 204) {
+            listTodos().then((e) => {
+              e.json().then((v) => {
+                updateTodoList(v);
+              });
             });
-          });
-        } else if (r.status !== 204) {
-          switchRenderPage(
-            <ErrorPage error={"Server is down. Please try again later."} />
-          );
-        }
-      });
+          } else {
+            switchRenderPage(
+              <ErrorPage error={"Server is down. Please try again later."} />
+            );
+          }
+        });
+      } catch (err) {
+        switchRenderPage(
+          <ErrorPage error={"Server is down. Please try again later."} />
+        );
+      }
     }
     fetchData();
   }, [updateToggle, page]);
